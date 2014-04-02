@@ -7,7 +7,7 @@ Namespace utility for reloading modified files and any files that may depend on 
 Add the following as a dependency to your lein user profile in ~/.lein/profiles.clj:
 
 ```clojure
-[stch-library/ns "0.1.0"]
+[stch-library/ns "0.2.0"]
 ```
 
 ## How to use
@@ -25,6 +25,7 @@ If you modify a file that other files depend on, all files will be reloaded in t
 
 ; Call after you've made a change to one or more namespaces.
 (reload-ns)
+; {use [me.core], require [my.core]}
 ```
 
 The default tracking fn looks for modified files in the project's src directory.  To change this behavior create your own tracking fn like this.

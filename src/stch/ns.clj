@@ -28,22 +28,27 @@
   "Reload modified namespaces in dependency order.
   Optionally pass your own namespace tracking fn,
   generated using mk-tracking-fn. Returns
-  a list of reloaded namespaces or nil."
+  a map of modified namespaces or nil."
   ([] (reload-ns modified-namespaces))
   ([ns-fn]
-   ; Get modified namespaces
-   (let [modified (ns-fn)]
-     (doseq [ns-sym modified]
-       ; Get namespace mappings
-       (let [ms (mappings ns-sym)]
-         ; Remove namespace
-         (remove-ns ns-sym)
-         ; Unmap mapped vars
-         (doseq [m ms]
-           (ns-unmap *ns* m))
-         ; Reload namespace
-         ((if (seq ms) use require) :reload ns-sym)))
-     modified)))
+   ; Get modified namespaces and there mappings
+   (let [modified
+         (map (juxt identity mappings) (ns-fn))]
+     (doseq [[ns-sym ms] modified]
+       ; Remove namespace
+       (remove-ns ns-sym)
+       ; Unmap mapped vars
+       (doseq [m ms] (ns-unmap *ns* m))
+       ; Reload namespace
+       ((if (seq ms) use require) :reload ns-sym))
+     ; Return map of modified namespaces
+     (reduce (fn [acc [ns-sym ms]]
+               (let [k (if (seq ms) 'use 'require)]
+                 (if (get acc k)
+                   (update-in acc [k] conj ns-sym)
+                   (assoc acc k [ns-sym]))))
+             nil
+             modified))))
 
 
 
