@@ -7,7 +7,7 @@ Namespace utility for reloading modified files and any files that may depend on 
 Add the following as a dependency to your lein user profile in ~/.lein/profiles.clj:
 
 ```clojure
-[stch-library/ns "0.2.0"]
+[stch-library/ns "0.3.0"]
 ```
 
 ## How to use
@@ -38,7 +38,12 @@ The default tracking fn looks for modified files in the project's src directory.
 (reload-ns tfn)
 ```
 
+## Things to note
 
+1. stch.ns is designed to be used in the user namespace, and not in a project namespace.
+2. If an exception is thrown in a namespace, that namespace will no longer be loaded in the current namespace.  An exceptions key will be added to result map, where each key/value pair is a namespace and the corresponding exception message.
+3. You will need to create a record instance after a change to a protocol the record implements or the actual protocol implementation itself.
+4. If no files have been modified since the last call to reload-ns, the return value will be nil. No namespaces will be reloaded in this case.
 
 
 
