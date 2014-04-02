@@ -33,22 +33,31 @@
   ([ns-fn]
    ; Get modified namespaces and there mappings
    (let [modified
-         (map (juxt identity mappings) (ns-fn))]
+         (map (juxt identity mappings) (ns-fn))
+         exceptions (transient {})]
      (doseq [[ns-sym ms] modified]
        ; Remove namespace
        (remove-ns ns-sym)
        ; Unmap mapped vars
        (doseq [m ms] (ns-unmap *ns* m))
        ; Reload namespace
-       ((if (seq ms) use require) :reload ns-sym))
-     ; Return map of modified namespaces
-     (reduce (fn [acc [ns-sym ms]]
-               (let [k (if (seq ms) 'use 'require)]
-                 (if (get acc k)
-                   (update-in acc [k] conj ns-sym)
-                   (assoc acc k [ns-sym]))))
-             nil
-             modified))))
+       (try
+         ((if (seq ms) use require) :reload ns-sym)
+         (catch Exception e
+           (assoc! exceptions ns-sym (.getMessage e)))))
+     (let [exceptions (persistent! exceptions)]
+       ; Return map of modified namespaces
+       (reduce (fn [acc [ns-sym ms]]
+                 (let [k (if (seq ms) 'use 'require)]
+                   (cond (get-in acc ['exceptions ns-sym])
+                         acc
+                         (get acc k)
+                         (update-in acc [k] conj ns-sym)
+                         :else
+                         (assoc acc k [ns-sym]))))
+               (when (seq exceptions)
+                 {'exceptions exceptions})
+               modified)))))
 
 
 
