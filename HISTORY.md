@@ -1,5 +1,9 @@
 # History
 
+1. Added unload-ns fn.
+2. mk-tracking fn is variadic now instead of taking a vector.
+3. Exposed helper fn: mappings.
+
 ## 0.3.0
 
 1. Add exceptions to result map.

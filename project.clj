@@ -1,4 +1,4 @@
-(defproject stch-library/ns "0.3.0"
+(defproject stch-library/ns "0.4.0"
   :description
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
