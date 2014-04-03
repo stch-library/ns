@@ -93,7 +93,7 @@ Local mappings
 
 There is one helper fn you can use to determine the current state of the REPL.
 
-mappings
+mappings returns a vector of fn name symbols that are mapped in the current namespace, and are defined in the given namespace.
 
 ```clojure
 (use 'my.core)
