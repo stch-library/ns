@@ -3,26 +3,57 @@
   Designed to be used in a REPL."
   (:use ns-tracker.core))
 
-(def mk-tracking-fn
-  "Takes a list of directory strings and returns a
-  tracking fn."
-  ns-tracker)
-
-(def modified-namespaces
+(def ^:private modified-namespaces
   "Default namespace tracking fn.  Looks for modified
   files in the project src directory."
-  (ns-tracker ["src"]))
+  (ns-tracker '("src")))
+
+(defn- aliases
+  "Takes a namespace symbol. Returns a vector of aliases
+  for the given namespace or nil if the namespace could
+  not be found."
+  [ns-sym]
+  (when-let [ns-obj (find-ns ns-sym)]
+    (reduce (fn [acc [k v]]
+              (if (= v ns-obj)
+                (conj acc k)
+                acc))
+            []
+            (ns-aliases *ns*))))
+
+;;; Public fns
 
 (defn mappings
-  "Determine which fns are mapped in the current
+  "Determine the fns that are mapped in the current
   namespace that are defined in the given namespace.
-  Returns a vector of fn name symbols or nil."
+  Returns a vector of fn name symbols or nil if the
+  namespace could not be found."
   [ns-sym]
-  (when (find-ns ns-sym)
+  (when-let [ns-obj (find-ns ns-sym)]
     (->> (vals (ns-map *ns*))
          (map meta)
-         (filter #(= (:ns %) (the-ns ns-sym)))
+         (filter #(= (:ns %) ns-obj))
          (mapv :name))))
+
+(defn mk-tracking-fn
+  "Takes one or more directory strings and returns a
+  tracking fn for those directories."
+  [& dirs]
+  (ns-tracker dirs))
+
+(defn unload-ns
+  "Takes a namespace symbol.  Unmaps any mapped
+  vars and removes any namespace aliases.  The net
+  effect is that you can use or require the same or
+  a different namespace with having conflict exceptions
+  thrown."
+  [ns-sym]
+  ; Unmap mapped vars
+  (doseq [m (mappings ns-sym)]
+    (ns-unmap *ns* m))
+  ; Remove namespace aliases (if any exists)
+  (doseq [a (aliases ns-sym)]
+    (ns-unalias *ns* a)))
 
 (defn reload-ns
   "Reload modified namespaces in dependency order.
@@ -40,7 +71,7 @@
        (remove-ns ns-sym)
        ; Unmap mapped vars
        (doseq [m ms] (ns-unmap *ns* m))
-       ; Reload namespace
+       ; Attempt to reload namespace
        (try
          ((if (seq ms) use require) :reload ns-sym)
          (catch Exception e
