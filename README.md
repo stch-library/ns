@@ -89,9 +89,21 @@ Local mappings
 ; No conflict exception, since we unloaded my.core.
 ```
 
+### use with glob patterns
+
+use* accepts one or more glob patterns
+and loads the matching namespaces via use. use* only searches in the src directory.
+
+```clojure
+(use* 'me.*)
+; [me.core me.util]
+```
+
+If you have namespaces me.core and me.util, both will be loaded via use.
+
 ### Helper fns
 
-There is one helper fn you can use to determine the current state of the REPL.
+stch.ns includes a few helper fns to help better understand what is currently loaded in the REPL and what namespaces exist in the src directory.
 
 mappings returns a vector of fn name symbols that are mapped in the current namespace, and are defined in the given namespace.
 
@@ -100,6 +112,13 @@ mappings returns a vector of fn name symbols that are mapped in the current name
 
 (mappings 'my.core)
 ; [do-something]
+```
+
+search-ns searches for namespaces located in the src directory using glob patterns.
+
+```clojure
+(search-ns 'me.*)
+; (me.core me.util)
 ```
 
 The clojure.core fn ns-aliases might also be helpful.
@@ -117,14 +136,3 @@ The clojure.core fn ns-aliases might also be helpful.
 2. If an exception is thrown in a namespace, that namespace will no longer be loaded in the current namespace.  An exceptions key will be added to result map, where each key/value pair is a namespace and the corresponding exception message.
 3. You will need to create a record instance after a change to a protocol the record implements or the actual protocol implementation itself.
 4. If no files have been modified since the last call to reload-ns, the return value will be nil. No namespaces will be reloaded in this case.
-
-
-
-
-
-
-
-
-
-
-

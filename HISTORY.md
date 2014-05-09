@@ -1,5 +1,10 @@
 # History
 
+## 0.5.0
+
+1. Added bultitude 0.2.6 as a dependency.
+2. Added src-ns, search-ns, and use* fns.
+
 ## 0.4.0
 
 1. Added unload-ns fn.

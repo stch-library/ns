@@ -1,7 +1,9 @@
 (ns stch.ns
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
-  (:use ns-tracker.core))
+  (:use [ns-tracker.core]
+        [stch.ns.util]
+        [bultitude.core :only [namespaces-on-classpath]]))
 
 (def ^:private modified-namespaces
   "Default namespace tracking fn.  Looks for modified
@@ -22,6 +24,39 @@
             (ns-aliases *ns*))))
 
 ;;; Public fns
+
+(defn src-ns
+  "Returns a sequence of namespace symbols found
+  in the src directory."
+  []
+  (namespaces-on-classpath :classpath "src"))
+
+(defn search-ns
+  "Given a glob pattern returns all the matching
+  namespaces found in the src directory."
+  [pattern]
+  (let [namespaces (src-ns)
+        pat (name pattern)]
+    (for [ns-sym namespaces
+          :when (glob pat (str ns-sym))]
+      ns-sym)))
+
+(defn use*
+  "Given one or more glob patterns, 'use' the matching
+  namespaces.  Returns a vector of matched namespaces
+  or nil. Only namespaces found in the src directory
+  will be checked."
+  [& patterns]
+  (let [namespaces (src-ns)
+        matched (transient [])]
+    (doseq [pattern patterns]
+      (doseq [ns-sym namespaces]
+        (when (glob (name pattern) (str ns-sym))
+          (use ns-sym)
+          (conj! matched ns-sym))))
+    (let [matched (persistent! matched)]
+      (when (seq matched)
+        matched))))
 
 (defn mappings
   "Determine the fns that are mapped in the current
@@ -58,8 +93,8 @@
 (defn reload-ns
   "Reload modified namespaces in dependency order.
   Optionally pass your own namespace tracking fn,
-  generated using mk-tracking-fn. Returns
-  a map of modified namespaces or nil."
+  generated using mk-tracking-fn. Returns a map
+  of modified namespaces or nil."
   ([] (reload-ns modified-namespaces))
   ([ns-fn]
    ; Get modified namespaces and there mappings
@@ -89,11 +124,3 @@
                (when (seq exceptions)
                  {'exceptions exceptions})
                modified)))))
-
-
-
-
-
-
-
-
