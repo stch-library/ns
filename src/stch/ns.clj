@@ -36,7 +36,7 @@
   namespaces found in the src directory."
   [pattern]
   (let [namespaces (src-ns)
-        pat (glob-pattern pattern)]
+        pat (glob-pattern (name pattern))]
     (for [ns-sym namespaces
           :when (glob pat (str ns-sym))]
       ns-sym)))
@@ -50,7 +50,7 @@
   (let [namespaces (src-ns)
         matched (transient [])]
     (doseq [pattern patterns]
-      (let [pat (glob-pattern pattern)]
+      (let [pat (glob-pattern (name pattern))]
         (doseq [ns-sym namespaces]
           (when (glob pat (str ns-sym))
             (use ns-sym)
