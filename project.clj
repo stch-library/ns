@@ -1,4 +1,4 @@
-(defproject stch-library/ns "0.5.0"
+(defproject stch-library/ns "0.5.1"
   :description
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
@@ -7,4 +7,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [ns-tracker "0.2.2"]
-                 [bultitude "0.2.6"]])
+                 [bultitude "0.2.6"]
+                 [stch-library/glob "0.1.0"]])

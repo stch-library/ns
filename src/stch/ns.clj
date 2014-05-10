@@ -2,7 +2,7 @@
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
   (:use [ns-tracker.core]
-        [stch.ns.util]
+        [stch.glob]
         [bultitude.core :only [namespaces-on-classpath]]))
 
 (def ^:private modified-namespaces
@@ -36,7 +36,7 @@
   namespaces found in the src directory."
   [pattern]
   (let [namespaces (src-ns)
-        pat (name pattern)]
+        pat (glob-pattern pattern)]
     (for [ns-sym namespaces
           :when (glob pat (str ns-sym))]
       ns-sym)))
@@ -50,10 +50,11 @@
   (let [namespaces (src-ns)
         matched (transient [])]
     (doseq [pattern patterns]
-      (doseq [ns-sym namespaces]
-        (when (glob (name pattern) (str ns-sym))
-          (use ns-sym)
-          (conj! matched ns-sym))))
+      (let [pat (glob-pattern pattern)]
+        (doseq [ns-sym namespaces]
+          (when (glob pat (str ns-sym))
+            (use ns-sym)
+            (conj! matched ns-sym)))))
     (let [matched (persistent! matched)]
       (when (seq matched)
         matched))))

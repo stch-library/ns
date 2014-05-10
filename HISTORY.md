@@ -1,5 +1,9 @@
 # History
 
+## 0.5.1
+
+1. Split out glob functionality into separate project.
+
 ## 0.5.0
 
 1. Added bultitude 0.2.6 as a dependency.
