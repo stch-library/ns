@@ -23,6 +23,9 @@
             []
             (ns-aliases *ns*))))
 
+(defn quote-form [f]
+  `(quote ~f))
+
 ;;; Public fns
 
 (defn src-ns
@@ -41,6 +44,12 @@
           :when (glob pat (str ns-sym))]
       ns-sym)))
 
+(defmacro search-ns#
+  "Slightly more convenient version of use*. Allows you to
+  pass glob patterns unquoted."
+  [pattern]
+  `(search-ns '~pattern))
+
 (defn use*
   "Given one or more glob patterns, 'use' the matching
   namespaces.  Returns a vector of matched namespaces
@@ -58,9 +67,6 @@
     (let [matched (persistent! matched)]
       (when (seq matched)
         matched))))
-
-(defn quote-form [f]
-  `(quote ~f))
 
 (defmacro use#
   "Slightly more convenient version of use*. Allows you to
