@@ -1,9 +1,9 @@
 (ns stch.ns
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
-  (:use [ns-tracker.core]
-        [stch.glob]
-        [bultitude.core :only [namespaces-on-classpath]]))
+  (:use [ns-tracker.core :only [ns-tracker]]
+        [bultitude.core :only [namespaces-on-classpath]]
+        [stch.glob]))
 
 (def ^:private modified-namespaces
   "Default namespace tracking fn.  Looks for modified
@@ -26,16 +26,16 @@
 ;;; Public fns
 
 (defn src-ns
-  "Returns a sequence of namespace symbols found
-  in the src directory."
+  "Returns a sequence of namespaces found in the
+  src directory."
   []
   (namespaces-on-classpath :classpath "src"))
 
 (defn search-ns
   "Given a glob pattern returns all the matching
-  namespaces found in the src directory."
+  namespaces found on the classpath."
   [pattern]
-  (let [namespaces (src-ns)
+  (let [namespaces (namespaces-on-classpath)
         pat (glob-pattern (name pattern))]
     (for [ns-sym namespaces
           :when (glob pat (str ns-sym))]
@@ -44,10 +44,10 @@
 (defn use*
   "Given one or more glob patterns, 'use' the matching
   namespaces.  Returns a vector of matched namespaces
-  or nil. Only namespaces found in the src directory
+  or nil. All namespaces found on the classpath
   will be checked."
   [& patterns]
-  (let [namespaces (src-ns)
+  (let [namespaces (namespaces-on-classpath)
         matched (transient [])]
     (doseq [pattern patterns]
       (let [pat (glob-pattern (name pattern))]
@@ -58,6 +58,15 @@
     (let [matched (persistent! matched)]
       (when (seq matched)
         matched))))
+
+(defn quote-form [f]
+  `(quote ~f))
+
+(defmacro use#
+  "Slightly more convenient version of use*. Allows you to
+  pass glob patterns unquoted."
+  [& patterns]
+  `(use* ~@(map quote-form patterns)))
 
 (defn mappings
   "Determine the fns that are mapped in the current
