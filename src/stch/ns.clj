@@ -45,8 +45,8 @@
       ns-sym)))
 
 (defmacro search-ns#
-  "Slightly more convenient version of use*. Allows you to
-  pass glob patterns unquoted."
+  "Slightly more convenient version of search-ns. Allows you to
+  pass the glob pattern unquoted."
   [pattern]
   `(search-ns '~pattern))
 
