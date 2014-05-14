@@ -23,7 +23,7 @@
             []
             (ns-aliases *ns*))))
 
-(defn quote-form [f]
+(defn- quote-form [f]
   `(quote ~f))
 
 ;;; Public fns
@@ -140,3 +140,6 @@
                (when (seq exceptions)
                  {'exceptions exceptions})
                modified)))))
+
+(def rns "Shorthand for reload-ns"
+  reload-ns)
