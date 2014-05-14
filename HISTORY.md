@@ -5,6 +5,7 @@
 1. Split out glob functionality into separate project.
 2. Changed behavior of use* and search-ns to search the entire classpath instead of just the src directory.
 3. Added use# and search-ns# macros.
+4. Added rns as a shorthand for reload-ns.
 
 ## 0.5.0
 

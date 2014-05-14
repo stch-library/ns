@@ -7,7 +7,7 @@ Namespace utility for reloading modified files and any files that may depend on 
 Add the following as a dependency to your lein user profile in ~/.lein/profiles.clj:
 
 ```clojure
-[stch-library/ns "0.5.0"]
+[stch-library/ns "0.5.1"]
 ```
 
 ## How to use
@@ -91,11 +91,10 @@ Local mappings
 
 ### use with glob patterns
 
-use* accepts one or more glob patterns
-and loads the matching namespaces via use. use* only searches in the src directory.
+use# accepts one or more glob patterns and loads the matching namespaces via use. Returns a vector of matched namespaces.
 
 ```clojure
-(use* 'me.*)
+(use# me.*)
 ; [me.core me.util]
 ```
 
@@ -114,10 +113,10 @@ mappings returns a vector of fn name symbols that are mapped in the current name
 ; [do-something]
 ```
 
-search-ns searches for namespaces located in the src directory using glob patterns.
+search-ns# searches for namespaces along the classpath using glob patterns.
 
 ```clojure
-(search-ns 'me.*)
+(search-ns# me.*)
 ; (me.core me.util)
 ```
 
