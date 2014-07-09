@@ -1,5 +1,13 @@
 # History
 
+## 0.5.3
+
+1. Upgraded to stch-glob 0.3.0.
+
+## 0.5.2
+
+1. Upgraded to stch-glob 0.2.0.
+
 ## 0.5.1
 
 1. Split out glob functionality into separate project.

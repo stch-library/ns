@@ -39,9 +39,9 @@
   namespaces found on the classpath."
   [pattern]
   (let [namespaces (namespaces-on-classpath)
-        pat (glob-pattern (name pattern))]
+        pat (compile-pattern (name pattern))]
     (for [ns-sym namespaces
-          :when (glob pat (str ns-sym))]
+          :when (match-glob pat (str ns-sym))]
       ns-sym)))
 
 (defmacro search-ns#
@@ -59,9 +59,9 @@
   (let [namespaces (namespaces-on-classpath)
         matched (transient [])]
     (doseq [pattern patterns]
-      (let [pat (glob-pattern (name pattern))]
+      (let [pat (compile-pattern (name pattern))]
         (doseq [ns-sym namespaces]
-          (when (glob pat (str ns-sym))
+          (when (match-glob pat (str ns-sym))
             (use ns-sym)
             (conj! matched ns-sym)))))
     (let [matched (persistent! matched)]

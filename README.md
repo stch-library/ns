@@ -7,7 +7,7 @@ Namespace utility for reloading modified files and any files that may depend on 
 Add the following as a dependency to your lein user profile in ~/.lein/profiles.clj:
 
 ```clojure
-[stch-library/ns "0.5.1"]
+[stch-library/ns "0.5.3"]
 ```
 
 ## How to use

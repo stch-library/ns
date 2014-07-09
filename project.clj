@@ -1,4 +1,4 @@
-(defproject stch-library/ns "0.5.1"
+(defproject stch-library/ns "0.5.3"
   :description
   "Namespace utility for reloading modified files.
   Designed to be used in a REPL."
@@ -8,4 +8,4 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [ns-tracker "0.2.2"]
                  [bultitude "0.2.6"]
-                 [stch-library/glob "0.1.0"]])
+                 [stch-library/glob "0.3.0"]])
